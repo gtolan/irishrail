@@ -3,7 +3,7 @@
     <div class="container-header">
       <h1>Details: {{headerTitle}}</h1>
     </div>
-    <v-slot name="expandable" class="expand">default</v-slot>
+    <v-slot name="expandable" class="expand"></v-slot>
   </div>
 </template>
 
