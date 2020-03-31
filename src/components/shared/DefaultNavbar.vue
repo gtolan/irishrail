@@ -8,7 +8,7 @@
 import navbarDirective from "../../directives/navbar";
 
 export default {
-  name: "Navbar",
+  name: "DefaultNavbar",
   directives: { navposition: navbarDirective }
 };
 </script>

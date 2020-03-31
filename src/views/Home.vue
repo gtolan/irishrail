@@ -1,30 +1,29 @@
 <template>
-  <div class="home">
-    <navbar />
-    <img alt="Vue logo" src="../assets/logo.png" />
-    <h1>Loading {{loading}}</h1>
-
-    <loadingScreen />
-
-    <h1>CurrentTrains {{currentTrains}}</h1>
-    <HelloWorld msg="Welcome to Your Vue.js App" />
-  </div>
+  <defaultLayout>
+    <template #pagecontent>
+      <div class="home">
+        <loadingScreen v-if="loading" />
+        <currentTrains v-if="!loading" />
+        <!-- <h1>CurrentTrains {{currentTrains}}</h1> -->
+      </div>
+    </template>
+  </defaultLayout>
 </template>
 
 <script>
 // @ is an alias to /src
-import HelloWorld from "@/components/HelloWorld.vue";
 import LoadingScreen from "@/components/LoadingScreen.vue";
-import Navbar from "@/components/shared/Navbar";
+import CurrentTrains from "@/components/CurrentTrains.vue";
+import DefaultLayout from "@/layouts/default";
 
 import { mapActions } from "vuex";
 
 export default {
   name: "Home",
   components: {
-    HelloWorld,
-    Navbar,
-    LoadingScreen
+    DefaultLayout,
+    LoadingScreen,
+    CurrentTrains
   },
   created() {
     this.fetchCurrentTrains(); //update the store with current trains

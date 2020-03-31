@@ -1,0 +1,12 @@
+<template>
+  <div>Footer</div>
+</template>
+
+<script>
+export default {
+  name: "DefaultFooter"
+};
+</script>
+
+<style lang="scss" scoped>
+</style>
