@@ -16,7 +16,7 @@ async function fetchData(url = "") {
 
 exports.getCurrentTrainsXML = functions.https.onRequest((request, funRes) => {
 
-
+    funRes.set('Access-Control-Allow-Origin', '*');
 fetchData("http://api.irishrail.ie/realtime/realtime.asmx/getCurrentTrainsXML")
   .then(resp => {
     parseString(resp, function(err, result) {
@@ -33,13 +33,13 @@ fetchData("http://api.irishrail.ie/realtime/realtime.asmx/getCurrentTrainsXML")
 
 exports.getTrainMovementsXML = functions.https.onRequest((request, funRes) => {
 
-
   const {trainid = 'e109', trainDate = '21 jan 2020'} = request.query;
-  console.log('request.query', request.query)
+  console.log('request.query', request.query);
+  funRes.set('Access-Control-Allow-Origin', '*');
   fetchData(`http://api.irishrail.ie/realtime/realtime.asmx/getTrainMovementsXML?TrainId=${trainid}&TrainDate=${trainDate}`)
     .then(resp => {
       parseString(resp, function(err, result) {
-        const trainData = result.ArrayOfObjTrainMovements;
+        const trainData = result.ArrayOfObjTrainMovements.objTrainMovements;
         funRes.send(trainData);
       });
     })
