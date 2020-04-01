@@ -2,7 +2,7 @@
   <div id="app">
     <div id="nav">
       <router-link to="/">Home</router-link>|
-      <router-link to="/about">About</router-link>
+      <router-link to="/current-trains">Current Trains</router-link>
     </div>
     <router-view />
   </div>
@@ -21,6 +21,7 @@ body {
 }
 
 #nav {
+  margin-top: 69px;
   padding: 30px;
 
   a {

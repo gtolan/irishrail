@@ -15,9 +15,13 @@ export default {
 
 <style lang="scss" scoped>
 nav {
-  height: 2.5rem;
+  height: 3.5rem;
   z-index: 2;
   background-color: green;
   color: white;
+  h1 {
+    font-size: 1.4rem;
+    font-family: sans-serif;
+  }
 }
 </style>

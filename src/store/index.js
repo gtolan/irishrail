@@ -7,14 +7,33 @@ export default new Vuex.Store({
   state: {
     currentTrains:[],
     trainMovements:[],
+    searchedTrainId:null,
+    searchedTrainDate:null
 
   },
   getters:{
     currentTrains: state => {
       return state.currentTrains;
+    },
+    filterTrainsById: (state) => {
+      const filt = state.currentTrains.filter(item => {
+        console.log(item['TrainCode'][0],  "IREM", state.searchedTrainId, "Match")
+        return item['TrainCode'][0] == state.searchedTrainId
+      })
+      console.log('filt', filt);
+      return filt;
+    },
+    searchedTrainId:(state) =>{
+      return state.searchedTrainId;
     }
   },
   mutations: {
+    updateSearchedTrainId(state, payload){
+      state.searchedTrainId = payload;
+    },
+    updateSearchedTrainDate(state, payload){
+      state.searchedTrainDate = payload;
+    },
     updateCurrenTrains(state, payload){
       console.log('state before CT mut-uptM', state.currentTrains);
       state.currentTrains = payload;
