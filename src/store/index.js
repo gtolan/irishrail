@@ -15,6 +15,12 @@ export default new Vuex.Store({
     currentTrains: state => {
       return state.currentTrains;
     },
+    trainMovements: state => {
+      return state.trainMovements;
+    },
+    firstTrainId: state => {
+      return state.currentTrains[0]['TrainCode'][0];
+    },
     filterTrainsById: (state) => {
       const filt = state.currentTrains.filter(item => {
         console.log(item['TrainCode'][0],  "IREM", state.searchedTrainId, "Match")
@@ -40,14 +46,18 @@ export default new Vuex.Store({
       console.log('state after CT mut-uptM', state.currentTrains);
     },
     updateTrainMovements(state, payload){
-      console.log('state before mut-uptM', state.trainMovements);
+      console.log('state before TM mut-uptM', state.trainMovements, payload, "pay");
       state.trainMovements = payload;
-      console.log('state after mut-uptM', state.trainMovements);
+      console.log('state after TM mut-uptM', state.trainMovements);
     }
   },
   actions: {
-    fetchTrainByIdAndDate({context},id, date){
-      return fetch(`https://us-central1-rail-5f324.cloudfunctions.net/getTrainMovementsXML?trainid=${id}&trainDate=${date}`
+    fetchTrainByIdAndDate(context,payload){
+      console.log(payload, "PAY");
+      // let selected = "P405"
+      const {selected = context.getters.firstTrainId, date = "01 apr 2020"} = payload;
+      console.log(selected, "SELL")
+      return fetch(`https://us-central1-rail-5f324.cloudfunctions.net/getTrainMovementsXML?trainid=${selected}&trainDate=${date}`
       )
         .then(res => {
           return res.json();
@@ -61,15 +71,18 @@ export default new Vuex.Store({
     },
     fetchCurrentTrains(context){
       return fetch(
-        "https://us-central1-rail-5f324.cloudfunctions.net/getCurrentTrainsXML",
-        {}
+        "https://us-central1-rail-5f324.cloudfunctions.net/getCurrentTrainsXML"
       )
         .then(res => {
           return res.json();
         })
         .then(data => {
-          console.log("action finished CT", data);
-          return context.commit('updateCurrenTrains', data)
+          context.commit('updateCurrenTrains', data);
+          console.log("context.trainMovements", context.state.trainMovements.length, context);
+          if(context.state.trainMovements.length == 0){
+            context.dispatch('fetchTrainByIdAndDate')
+          }
+          return 
         });
     }
   },
