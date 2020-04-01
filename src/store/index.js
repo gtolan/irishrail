@@ -5,15 +5,18 @@ Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
-    currentTrains:[],
-    trainMovements:[],
-    searchedTrainId:null,
-    searchedTrainDate:null
+    currentTrains:[],  //the current trains available
+    trainMovements:[],  //By Train Id Movements - or using Date
+    searchedTrainId:null,  //Current searched train
+    searchedTrainDate:null //Current chosen date for search
 
   },
   getters:{
     currentTrains: state => {
       return state.currentTrains;
+    },
+    trainMovementsLength: state => {
+      return state.trainMovements ? state.trainMovements.length : 0;
     },
     trainMovements: state => {
       return state.trainMovements;
@@ -23,10 +26,8 @@ export default new Vuex.Store({
     },
     filterTrainsById: (state) => {
       const filt = state.currentTrains.filter(item => {
-        console.log(item['TrainCode'][0],  "IREM", state.searchedTrainId, "Match")
         return item['TrainCode'][0] == state.searchedTrainId
       })
-      console.log('filt', filt);
       return filt;
     },
     searchedTrainId:(state) =>{
@@ -41,34 +42,32 @@ export default new Vuex.Store({
       state.searchedTrainDate = payload;
     },
     updateCurrenTrains(state, payload){
-      console.log('state before CT mut-uptM', state.currentTrains);
       state.currentTrains = payload;
-      console.log('state after CT mut-uptM', state.currentTrains);
     },
     updateTrainMovements(state, payload){
-      console.log('state before TM mut-uptM', state.trainMovements, payload, "pay");
       state.trainMovements = payload;
-      console.log('state after TM mut-uptM', state.trainMovements);
     }
   },
   actions: {
+    //fetch firebase cloud function for Json on individual trains
     fetchTrainByIdAndDate(context,payload){
-      console.log(payload, "PAY");
-      // let selected = "P405"
-      const {selected = context.getters.firstTrainId, date = "01 apr 2020"} = payload;
-      console.log(selected, "SELL")
+
+        const {selected , date = "01 apr 2020"} = payload;  //selected is read only from payload
+
+      //destructure but also provide defaults just in case - cloud function already has default fallbacks also
       return fetch(`https://us-central1-rail-5f324.cloudfunctions.net/getTrainMovementsXML?trainid=${selected}&trainDate=${date}`
       )
         .then(res => {
           return res.json();
         })
         .then(data => {
-          console.log("action finished IDDate", data.objTrainMovements);
-          const movements = data.objTrainMovements;
-          return context.commit('updateTrainMovements',movements )
+          // const movements = data.objTrainMovements;
+          return context.commit('updateTrainMovements',data )
 
         });
     },
+
+    //fetch firebase cloud function for Json of current Train
     fetchCurrentTrains(context){
       return fetch(
         "https://us-central1-rail-5f324.cloudfunctions.net/getCurrentTrainsXML"
@@ -78,9 +77,8 @@ export default new Vuex.Store({
         })
         .then(data => {
           context.commit('updateCurrenTrains', data);
-          console.log("context.trainMovements", context.state.trainMovements.length, context);
-          if(context.state.trainMovements.length == 0){
-            context.dispatch('fetchTrainByIdAndDate')
+          if(context.getters.trainMovementsLength == 0){ //If no train Movements, get the movements of the first train to populate the page = not neccessary - better UX 
+            context.dispatch('fetchTrainByIdAndDate', {selected: context.getters.firstTrainId })
           }
           return 
         });

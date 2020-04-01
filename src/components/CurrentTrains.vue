@@ -9,25 +9,23 @@
       <div class="card-header" @click="handleToggleExpand(item, $event)">
         <h1
           class="card-title"
-        >{{item['TrainCode'][0]}} Direction: {{item['Direction'][0] | newLine}}</h1>
+        >{{item['TrainCode']| firstElement}} Direction: {{item['Direction'] | firstElement | newLine}}</h1>
         <span class="icon"></span>
       </div>
 
       <div class="list-items hidden">
         <ul>
-          <li>
-            {{item['TrainCode'][0]}}
-            <button
-              class="more-info"
-              @click="getMoreTrainInfo(item['TrainCode'][0])"
-            >More info</button>
-          </li>
-          <li>{{item['TrainDate'][0]}}</li>
-          <li>{{item['TrainStatus'][0]}}</li>
-          <li>{{item['TrainLongitude'][0]}}</li>
-          <li>{{item['TrainLatitude'][0]}}</li>
-          <li>{{item['Direction'][0]}}</li>
-          <li>{{item['PublicMessage'][0] | newLine}}</li>
+          <li>{{item['TrainCode'] | firstElement}}</li>
+          <li>{{item['TrainDate']| firstElement}}</li>
+          <li>{{item['TrainStatus']| firstElement}}</li>
+          <li>{{item['TrainLongitude']| firstElement}}</li>
+          <li>{{item['TrainLatitude']| firstElement}}</li>
+          <li>{{item['Direction'] | firstElement}}</li>
+          <li class="mess">{{item['PublicMessage'] | firstElement | newLine}}</li>
+          <button
+            class="more-info"
+            @click="getMoreTrainInfo(item['TrainCode'][0])"
+          >See Train Movements</button>
         </ul>
       </div>
     </div>
@@ -35,13 +33,14 @@
 </template>
 
 <script>
-import { mapMutations } from "vuex";
+import { mapMutations, mapActions } from "vuex";
 export default {
   name: "CurrentTrains",
   filters: {
     newLine: function(value) {
-      console.log(value, "newline");
-      return value.replace(/(\r\n|\n|\r)/gm, " ");
+      if (!value) return;
+      value = value.toString().replace(/(\r\n|\n|\r|\\n)/gm, " ");
+      return value;
     }
   },
   computed: {
@@ -64,11 +63,10 @@ export default {
       el.dataset.isOpen = "false";
     },
     handleToggleExpand(item, event) {
-      console.log(event.target, event.target.nextSibling);
       const elem = event.target.classList.contains("icon")
         ? event.target.previousElementSibling
         : event.target;
-      console.log(elem, "want h1");
+
       const listItems = elem.parentElement.nextSibling;
       elem.nextSibling.classList.toggle("open");
 
@@ -77,9 +75,11 @@ export default {
         : this.closeCollapse(listItems);
     },
     ...mapMutations(["updateSearchedTrainId"]),
+    ...mapActions(["fetchTrainByIdAndDate"]),
     getMoreTrainInfo(id) {
-      console.log("find more info on..", id);
+      const payload = { selected: id };
       this.updateSearchedTrainId(id);
+      this.fetchTrainByIdAndDate(payload);
       this.$router.push(`/train/${id}`);
     }
   }
@@ -100,7 +100,7 @@ export default {
 div.train-card {
   width: 90vw;
   border: 1px solid grey;
-  padding: 0.3rem;
+  padding: 1rem;
   border-radius: 5px;
   width: 90vw;
   margin: 1rem;
@@ -118,12 +118,29 @@ div.train-card {
     margin: 0;
     position: relative;
     width: 90%;
+    text-align: left;
   }
-
+  span {
+    position: absolute;
+    right: -1rem;
+  }
   span.open::after {
     content: " \02D7";
     position: absolute;
-    margin-top: 0.25rem;
+    margin-top: -0.3rem;
+    background-color: #a59595;
+    height: 1.5rem;
+    padding-top: 0.75rem;
+    padding: 0.45rem;
+    padding-top: 0.7rem;
+    padding-bottom: 0;
+    border-radius: 50%;
+    color: white;
+    margin-right: -0.51rem;
+    line-height: 0.17rem;
+    &:hover {
+      background-color: #2c8a5e;
+    }
   }
   span::after {
     content: " \02D6";
@@ -134,7 +151,7 @@ div.train-card {
     vertical-align: top;
     position: absolute;
     right: 1rem;
-    top: 0.35rem;
+    top: 0.25rem;
   }
 
   div.list-items {
@@ -157,14 +174,30 @@ div.train-card {
       display: flex;
       flex-direction: column;
       align-items: baseline;
+      margin-bottom: 0;
+      li {
+        text-align: left;
+        font-family: monospace;
+        &.mess {
+          white-space: pre-wrap;
+        }
+      }
       button.more-info {
         height: 2rem;
-        width: 200px;
+        width: 100%;
         border-radius: 4px;
         background-color: dodgerblue;
         color: white;
         font-size: 1rem;
         text-transform: uppercase;
+        margin: 10px auto;
+        outline: none;
+        cursor: pointer;
+        border: 1px solid darkblue;
+        letter-spacing: 1px;
+        &:hover {
+          background-color: #145ea7;
+        }
       }
     }
   }
