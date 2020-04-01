@@ -6,16 +6,19 @@
       :key="index"
       :headerTitle="item['TrainCode']"
     >
-      <h1 class="card-title" @click="handleToggleExpand(item, $event)">
-        {{item['TrainCode'][0]}} Direction: {{item['Direction'][0] | newLine}}
+      <div class="card-header" @click="handleToggleExpand(item, $event)">
+        <h1
+          class="card-title"
+        >{{item['TrainCode'][0]}} Direction: {{item['Direction'][0] | newLine}}</h1>
         <span class="icon"></span>
-      </h1>
+      </div>
 
       <div class="list-items hidden">
         <ul>
           <li>
             {{item['TrainCode'][0]}}
             <button
+              class="more-info"
               @click="getMoreTrainInfo(item['TrainCode'][0])"
             >More info</button>
           </li>
@@ -62,16 +65,12 @@ export default {
     },
     handleToggleExpand(item, event) {
       console.log(event.target, event.target.nextSibling);
-      let listItems;
-      if (event.target.classList.contains("icon")) {
-        listItems = event.target.parentElement.nextSibling;
-        event.target.parentElement.classList.toggle("open");
-        console.log(listItems);
-      } else {
-        listItems = event.target.nextSibling;
-        event.target.classList.toggle("open");
-        console.log(listItems);
-      }
+      const elem = event.target.classList.contains("icon")
+        ? event.target.previousElementSibling
+        : event.target;
+      console.log(elem, "want h1");
+      const listItems = elem.parentElement.nextSibling;
+      elem.nextSibling.classList.toggle("open");
 
       listItems.classList.contains("hidden")
         ? this.openCollapse(listItems)
@@ -110,26 +109,32 @@ div.train-card {
   display: inline-block;
   vertical-align: top;
   cursor: pointer;
+  .card-header {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
   h1.card-title {
     margin: 0;
     position: relative;
-    &.open {
-      span::after {
-        content: " \02D7";
-        position: absolute;
-      }
-    }
-    span::after {
-      content: " \02D6";
-      position: absolute;
-      font-size: 4rem;
-      line-height: 0;
-      display: inline-block;
-      vertical-align: top;
-      position: absolute;
-      right: 1rem;
-      top: 0.35rem;
-    }
+    width: 90%;
+  }
+
+  span.open::after {
+    content: " \02D7";
+    position: absolute;
+    margin-top: 0.25rem;
+  }
+  span::after {
+    content: " \02D6";
+    position: absolute;
+    font-size: 4rem;
+    line-height: 0;
+    display: inline-block;
+    vertical-align: top;
+    position: absolute;
+    right: 1rem;
+    top: 0.35rem;
   }
 
   div.list-items {
@@ -152,6 +157,15 @@ div.train-card {
       display: flex;
       flex-direction: column;
       align-items: baseline;
+      button.more-info {
+        height: 2rem;
+        width: 200px;
+        border-radius: 4px;
+        background-color: dodgerblue;
+        color: white;
+        font-size: 1rem;
+        text-transform: uppercase;
+      }
     }
   }
 }

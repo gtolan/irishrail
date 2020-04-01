@@ -1,40 +1,42 @@
 
 <template>
   <section class="container">
-    <h1>Seach Train: {{this.$route.params.id}}</h1>
+    <h1>Seach Train: {{this.routeTrainId == '' ? firstTrainVailableTrain: this.routeTrainId}}</h1>
 
     <form @submit.prevent="handleFormSubmit">
-      <select v-model="selected">
-        <option value="start" key="start">Select Train By Code</option>
+      <select v-model="selected" :placeholder="selected">
         <option v-for="(item, index) in currentTrains" :key="index">{{item['TrainCode'][0]}}</option>
       </select>
-      <datepicker></datepicker>
+      <datepicker placeholder="01 apr 2020" class="datepicker" v-model="dateSelected"></datepicker>
 
-      <button type="submit" class="btn">Search by Date</button>
+      <button type="submit" class="btn search-date">Search by Date</button>
     </form>
+
     <div
       class="train-card"
-      v-for="(item,index) in trainById"
+      v-for="(item,index) in trainMovements"
       :key="index"
       :headerTitle="item['TrainCode']"
     >
       <h1 class="card-title" @click="handleToggleExpand(item, $event)">
-        {{item['TrainCode'][0]}} Direction: {{item['Direction'][0] | newLine}}
+        Scheduled Departure: {{item['ScheduledDeparture'][0]}}
         <span class="icon"></span>
       </h1>
 
       <div class="list-items">
         <ul>
-          <li>
-            {{item['TrainCode'][0]}}
-            <button>More info</button>
-          </li>
-          <li>{{item["TrainDate"][0]}}</li>
-          <li>{{item['TrainStatus'][0]}}</li>
-          <li>{{item['TrainLongitude'][0]}}</li>
-          <li>{{item['TrainLatitude'][0]}}</li>
-          <li>{{item['Direction'][0]}}</li>
-          <li>{{item['PublicMessage'][0] | newLine}}</li>
+          <li>Train Code {{item['TrainCode'][0]}}</li>
+          <li>Date: {{item["TrainDate"][0] }}</li>
+          <li>Location Name: {{item['LocationFullName'][0] }}</li>
+          <li>Location Order: {{item['LocationOrder'][0] }}</li>
+          <li>Location Type: {{item['LocationType'][0] }}</li>
+          <li>Location Name: {{item['LocationFullName'][0] }}</li>
+          <li>Origin: {{item['TrainOrigin'][0] }}</li>
+          <li>Destination: {{item['TrainDestination'][0] }}</li>
+          <li>Scheduled Arrival: {{item['ScheduledArrival'][0] }}</li>
+          <li>Scheduled Departure: {{item['ScheduledDeparture'][0] }}</li>
+          <li>Expected Arrrival: {{item['ExpectedArrival'][0] }}</li>
+          <li>Expected Departure: {{item['ExpectedDeparture'][0] }}</li>
         </ul>
       </div>
     </div>
@@ -43,7 +45,7 @@
 
 
 <script>
-import { mapMutations } from "vuex";
+import { mapMutations, mapActions } from "vuex";
 import Datepicker from "vuejs-datepicker";
 export default {
   components: {
@@ -54,6 +56,8 @@ export default {
     console.log(this.trainById);
     this.updateSearchedTrainId = this.$route.params.id;
     this.currentTrains.length == 0 ? this.fetchCurrentTrains() : null;
+    const payload = { selected: this.updateSearchedTrainId };
+    this.fetchTrainByIdAndDate(payload);
   },
   computed: {
     trainById() {
@@ -63,19 +67,67 @@ export default {
     },
     currentTrains() {
       return this.$store.getters.currentTrains;
+    },
+    trainMovements() {
+      return this.getTrainMovements();
+    },
+    firstTrainVailableTrain() {
+      return this.$store.getters.firstTrainId;
     }
+  },
+  updated() {
+    console.log(this.trainMovements, "MOV Updated");
   },
   data() {
     return {
       routeTrainId: this.$route.params.id,
-      selected: null
+      selected: this.firstTrainVailableTrain,
+      dateSelected: new Date(2020, 3, 1)
     };
   },
   methods: {
     ...mapMutations(["updateSearchedTrainId"]),
+    ...mapActions([
+      "fetchTrainByIdAndDate" // map `this.fetchTrainByIdAndDate()` to `this.$store.dispatch('fetchTrainByIdAndDate')`
+    ]),
+    getTrainMovements() {
+      return this.$store.getters.trainMovements;
+    },
     openCollapse(el) {
       el.classList.remove("hidden");
       el.dataset.isOpen = "true";
+    },
+    dateFormat(date) {
+      var month_names = [
+        "jan",
+        "feb",
+        "mar",
+        "apr",
+        "may",
+        "jun",
+        "jul",
+        "aug",
+        "sep",
+        "oct",
+        "nov",
+        "dec"
+      ];
+
+      var day = date.getDate();
+      var month_index = date.getMonth();
+      var year = date.getFullYear();
+
+      return "" + day + " " + month_names[month_index] + " " + year;
+    },
+    handleFormSubmit() {
+      const date = this.dateFormat(this.dateSelected);
+      const selected = this.selected;
+      console.log(this.dateSelected, this.selected, date);
+      const payload = { selected, date };
+      this.routeTrainId = selected;
+      //   this.$route.path = "/" + encodeURIComponent(selected);
+      history.pushState({}, null, `/train/${selected}`);
+      this.fetchTrainByIdAndDate(payload);
     },
     closeCollapse(el) {
       el.classList.add("hidden");
@@ -101,13 +153,43 @@ export default {
   }
 };
 </script>
-
+<style >
+.vdp-datepicker.datepicker > div > input {
+  width: 70vw;
+  max-width: 600px;
+  margin: 1rem auto;
+  height: 3rem;
+  border-radius: 5px;
+  font-size: 1.25rem;
+  padding-left: 0.45rem;
+}
+</style>
 <style lang="scss" scoped>
 .container {
   width: 70vw;
   max-width: 600px;
   margin: auto;
+  select,
+  form .btn {
+    width: 70vw;
+    max-width: 600px;
+    margin: 1rem auto;
+    height: 3rem;
+    border-radius: 5px;
+  }
+  select {
+    font-size: 1.25rem;
+  }
+  form button.search-date {
+    font-weight: 700;
+    font-size: 1.15rem;
+    font-family: sans-serif;
+    letter-spacing: 1px;
+    color: white;
+    background-color: #4e9f3c;
+  }
 }
+
 h1.card-title {
   margin: 0;
   position: relative;
@@ -138,9 +220,6 @@ div.list-items {
   animation: collapse 1s;
   animation-fill-mode: forwards;
   &.hidden {
-    //   height: 0;
-    //   opacity: 0;
-    //   z-index: 0;
     display: none;
   }
 

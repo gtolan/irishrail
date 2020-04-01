@@ -3,10 +3,13 @@
     <div id="nav">
       <router-link to="/">Home</router-link>|
       <router-link to="/current-trains">Current Trains</router-link>
+      <router-link to="/train/">By Train ID</router-link>
     </div>
     <router-view />
   </div>
 </template>
+
+
 
 <style lang="scss">
 body {
