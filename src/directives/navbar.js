@@ -1,5 +1,5 @@
-export default function(elem, binding){
-    console.log(binding, "ind")
+export default function(elem ){
+
     elem.style.position = "absolute";
     elem.style.top = 0;
     elem.style.width = "100vw";

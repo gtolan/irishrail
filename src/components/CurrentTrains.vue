@@ -9,25 +9,25 @@
       <div class="card-header" @click="handleToggleExpand(item, $event)">
         <h1
           class="card-title"
-        >{{item['TrainCode'][0]}} Direction: {{item['Direction'][0] | newLine}}</h1>
+        >{{item['TrainCode']| firstElement}} Direction: {{item['Direction'] | firstElement | newLine}}</h1>
         <span class="icon"></span>
       </div>
 
       <div class="list-items hidden">
         <ul>
           <li>
-            {{item['TrainCode'][0]}}
+            {{item['TrainCode'] | firstElement}}
             <button
               class="more-info"
-              @click="getMoreTrainInfo(item['TrainCode'][0])"
+              @click="getMoreTrainInfo(item['TrainCode']| firstElement)"
             >More info</button>
           </li>
-          <li>{{item['TrainDate'][0]}}</li>
-          <li>{{item['TrainStatus'][0]}}</li>
-          <li>{{item['TrainLongitude'][0]}}</li>
-          <li>{{item['TrainLatitude'][0]}}</li>
-          <li>{{item['Direction'][0]}}</li>
-          <li>{{item['PublicMessage'][0] | newLine}}</li>
+          <li>{{item['TrainDate']| firstElement}}</li>
+          <li>{{item['TrainStatus']| firstElement}}</li>
+          <li>{{item['TrainLongitude']| firstElement}}</li>
+          <li>{{item['TrainLatitude']| firstElement}}</li>
+          <li>{{item['Direction'] | firstElement}}</li>
+          <li>{{item['PublicMessage'] | firstElement | newLine}}</li>
         </ul>
       </div>
     </div>
@@ -35,12 +35,11 @@
 </template>
 
 <script>
-import { mapMutations } from "vuex";
+import { mapMutations, mapActions } from "vuex";
 export default {
   name: "CurrentTrains",
   filters: {
     newLine: function(value) {
-      console.log(value, "newline");
       return value.replace(/(\r\n|\n|\r)/gm, " ");
     }
   },
@@ -77,9 +76,12 @@ export default {
         : this.closeCollapse(listItems);
     },
     ...mapMutations(["updateSearchedTrainId"]),
+    ...mapActions(["fetchTrainByIdAndDate"]),
     getMoreTrainInfo(id) {
       console.log("find more info on..", id);
+      const payload = { selected: id };
       this.updateSearchedTrainId(id);
+      this.fetchTrainByIdAndDate(payload);
       this.$router.push(`/train/${id}`);
     }
   }

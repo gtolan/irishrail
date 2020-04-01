@@ -21,7 +21,7 @@
 import { mapActions, mapMutations } from "vuex";
 
 export default {
-  name: "Home",
+  name: "HomePage",
   components: {},
   created() {
     this.fetchCurrentTrains(); //update the store with current trains
@@ -64,6 +64,7 @@ export default {
     font-size: 1.15rem;
     font-family: sans-serif;
     letter-spacing: 1px;
+    outline: none;
   }
   .route {
     display: block;

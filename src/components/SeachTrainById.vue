@@ -5,7 +5,10 @@
 
     <form @submit.prevent="handleFormSubmit">
       <select v-model="selected" :placeholder="selected">
-        <option v-for="(item, index) in currentTrains" :key="index">{{item['TrainCode'][0]}}</option>
+        <option
+          v-for="(item, index) in currentTrains"
+          :key="index"
+        >{{item['TrainCode'] | firstElement}}</option>
       </select>
       <datepicker placeholder="01 apr 2020" class="datepicker" v-model="dateSelected"></datepicker>
 
@@ -19,24 +22,24 @@
       :headerTitle="item['TrainCode']"
     >
       <h1 class="card-title" @click="handleToggleExpand(item, $event)">
-        Scheduled Departure: {{item['ScheduledDeparture'][0]}}
+        Scheduled Departure: {{item['ScheduledDeparture'] | firstElement}}
         <span class="icon"></span>
       </h1>
 
       <div class="list-items">
         <ul>
-          <li>Train Code {{item['TrainCode'][0]}}</li>
-          <li>Date: {{item["TrainDate"][0] }}</li>
-          <li>Location Name: {{item['LocationFullName'][0] }}</li>
-          <li>Location Order: {{item['LocationOrder'][0] }}</li>
-          <li>Location Type: {{item['LocationType'][0] }}</li>
-          <li>Location Name: {{item['LocationFullName'][0] }}</li>
-          <li>Origin: {{item['TrainOrigin'][0] }}</li>
-          <li>Destination: {{item['TrainDestination'][0] }}</li>
-          <li>Scheduled Arrival: {{item['ScheduledArrival'][0] }}</li>
-          <li>Scheduled Departure: {{item['ScheduledDeparture'][0] }}</li>
-          <li>Expected Arrrival: {{item['ExpectedArrival'][0] }}</li>
-          <li>Expected Departure: {{item['ExpectedDeparture'][0] }}</li>
+          <li>Train Code {{item['TrainCode'] | firstElement}}</li>
+          <li>Date: {{item["TrainDate"] | firstElement }}</li>
+          <li>Location Name: {{item['LocationFullName'] | firstElement }}</li>
+          <li>Location Order: {{item['LocationOrder'] | firstElement }}</li>
+          <li>Location Type: {{item['LocationType'] | firstElement }}</li>
+          <li>Location Name: {{item['LocationFullName'] | firstElement }}</li>
+          <li>Origin: {{item['TrainOrigin'] | firstElement }}</li>
+          <li>Destination: {{item['TrainDestination'] | firstElement }}</li>
+          <li>Scheduled Arrival: {{item['ScheduledArrival'] | firstElement }}</li>
+          <li>Scheduled Departure: {{item['ScheduledDeparture'] | firstElement }}</li>
+          <li>Expected Arrrival: {{item['ExpectedArrival'] | firstElement }}</li>
+          <li>Expected Departure: {{item['ExpectedDeparture'] | firstElement}}</li>
         </ul>
       </div>
     </div>
@@ -52,18 +55,11 @@ export default {
     Datepicker
   },
   created() {
-    console.log(this.$route.params.id);
-    console.log(this.trainById);
-    this.updateSearchedTrainId = this.$route.params.id;
     this.currentTrains.length == 0 ? this.fetchCurrentTrains() : null;
-    const payload = { selected: this.updateSearchedTrainId };
-    this.fetchTrainByIdAndDate(payload);
   },
   computed: {
     trainById() {
-      let ge = this.$store.getters.filterTrainsById;
-      console.log(ge, "GE");
-      return ge;
+      return this.$store.getters.filterTrainsById;
     },
     currentTrains() {
       return this.$store.getters.currentTrains;
@@ -75,14 +71,11 @@ export default {
       return this.$store.getters.firstTrainId;
     }
   },
-  updated() {
-    console.log(this.trainMovements, "MOV Updated");
-  },
   data() {
     return {
       routeTrainId: this.$route.params.id,
-      selected: this.firstTrainVailableTrain,
-      dateSelected: new Date(2020, 3, 1)
+      selected: this.firstTrainVailableTrain || 0,
+      dateSelected: new Date()
     };
   },
   methods: {
@@ -122,10 +115,8 @@ export default {
     handleFormSubmit() {
       const date = this.dateFormat(this.dateSelected);
       const selected = this.selected;
-      console.log(this.dateSelected, this.selected, date);
       const payload = { selected, date };
       this.routeTrainId = selected;
-      //   this.$route.path = "/" + encodeURIComponent(selected);
       history.pushState({}, null, `/train/${selected}`);
       this.fetchTrainByIdAndDate(payload);
     },
@@ -153,6 +144,8 @@ export default {
   }
 };
 </script>
+
+
 <style >
 .vdp-datepicker.datepicker > div > input {
   width: 70vw;
@@ -164,6 +157,8 @@ export default {
   padding-left: 0.45rem;
 }
 </style>
+
+
 <style lang="scss" scoped>
 .container {
   width: 70vw;
@@ -171,6 +166,7 @@ export default {
   margin: auto;
   select,
   form .btn {
+    outline: none;
     width: 70vw;
     max-width: 600px;
     margin: 1rem auto;

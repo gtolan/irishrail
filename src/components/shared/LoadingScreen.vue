@@ -11,7 +11,7 @@ export default {
   name: "LoadingScreen",
   data() {
     return {
-      loaderImage: require("../assets/loader.svg")
+      loaderImage: require("../../assets/loader.svg")
     };
   }
 };
