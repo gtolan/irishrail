@@ -1,6 +1,6 @@
 <template>
   <nav v-navposition>
-    <h4>Rail</h4>
+    <img class="nav-logo" :src="irishRailLogo" />
   </nav>
 </template>
 
@@ -9,7 +9,12 @@ import navbarDirective from "../../directives/navbar";
 
 export default {
   name: "DefaultNavbar",
-  directives: { navposition: navbarDirective }
+  directives: { navposition: navbarDirective },
+  data() {
+    return {
+      irishRailLogo: require("../../assets/irishRail.png")
+    };
+  }
 };
 </script>
 
@@ -17,11 +22,12 @@ export default {
 nav {
   height: 3.5rem;
   z-index: 2;
-  background-color: green;
+  background-color: #2c8a5f;
   color: white;
-  h1 {
-    font-size: 1.4rem;
-    font-family: sans-serif;
+  img.nav-logo {
+    width: 155px;
+    display: -webkit-box;
+    margin: auto;
   }
 }
 </style>

@@ -1,3 +1,4 @@
 export default function(value){
-    return value[0]
+    if(!value[0]) return;
+    return value[0];``
 }

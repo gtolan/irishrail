@@ -51,9 +51,11 @@
 import { mapMutations, mapActions } from "vuex";
 import Datepicker from "vuejs-datepicker";
 export default {
+  name: "SearchTrainById",
   components: {
     Datepicker
   },
+
   created() {
     this.currentTrains.length == 0 ? this.fetchCurrentTrains() : null;
   },
@@ -65,16 +67,16 @@ export default {
       return this.$store.getters.currentTrains;
     },
     trainMovements() {
-      return this.getTrainMovements();
+      return this.$store.getters.trainMovements;
     },
-    firstTrainVailableTrain() {
+    firstTrainAvailableTrain() {
       return this.$store.getters.firstTrainId;
     }
   },
   data() {
     return {
       routeTrainId: this.$route.params.id,
-      selected: this.firstTrainVailableTrain || 0,
+      selected: this.firstTrainAvailableTrain,
       dateSelected: new Date()
     };
   },
@@ -83,9 +85,7 @@ export default {
     ...mapActions([
       "fetchTrainByIdAndDate" // map `this.fetchTrainByIdAndDate()` to `this.$store.dispatch('fetchTrainByIdAndDate')`
     ]),
-    getTrainMovements() {
-      return this.$store.getters.trainMovements;
-    },
+
     openCollapse(el) {
       el.classList.remove("hidden");
       el.dataset.isOpen = "true";
@@ -125,16 +125,13 @@ export default {
       el.dataset.isOpen = "false";
     },
     handleToggleExpand(item, event) {
-      console.log(event.target, event.target.nextSibling);
       let listItems;
       if (event.target.classList.contains("icon")) {
         listItems = event.target.parentElement.nextSibling;
         event.target.parentElement.classList.toggle("open");
-        console.log(listItems);
       } else {
         listItems = event.target.nextSibling;
         event.target.classList.toggle("open");
-        console.log(listItems);
       }
 
       listItems.classList.contains("hidden")
@@ -155,6 +152,7 @@ export default {
   border-radius: 5px;
   font-size: 1.25rem;
   padding-left: 0.45rem;
+  outline: none;
 }
 </style>
 
@@ -182,13 +180,18 @@ export default {
     font-family: sans-serif;
     letter-spacing: 1px;
     color: white;
-    background-color: #4e9f3c;
+    background-color: #2c8a5f;
+    cursor: pointer;
+    &:hover {
+      background-color: #42b983;
+    }
   }
 }
 
 h1.card-title {
   margin: 0;
   position: relative;
+  cursor: pointer;
   &.open {
     span::after {
       content: " \02D7";
@@ -207,7 +210,12 @@ h1.card-title {
     top: 0.35rem;
   }
 }
-
+div.train-card {
+  border: 1px solid grey;
+  border-radius: 5px;
+  margin: 1rem auto;
+  padding: 1rem;
+}
 div.list-items {
   transition: 0.3s ease-in-out;
   height: auto;

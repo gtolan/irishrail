@@ -8,9 +8,9 @@
     <form @submit.prevent="handleFormSubmit">
       <select v-model="selected">
         <option value="start" key="start">Select Train By Code</option>
-        <option v-for="(item, index) in currentTrains" :key="index">{{item['TrainCode'][0]}}</option>
+        <option v-for="(item, index) in currentTrains" :key="index">{{item["TrainCode"][0]}}</option>
       </select>
-      <button type="submit" class="btn">Search by Train Code</button>
+      <button type="submit" class="btn search-train-code">Search by Train Code</button>
     </form>
   </div>
 </template>
@@ -53,6 +53,19 @@ export default {
 
 <style lang="scss" scoped>
 .container {
+  .logo,
+  form,
+  select {
+    width: 95vw;
+    max-width: 600px;
+    margin: auto;
+    outline: none;
+    font-size: 1rem;
+    cursor: pointer;
+    &::placeholder {
+      font-size: 1rem;
+    }
+  }
   .btn {
     margin: 1rem auto;
     height: 3rem;
@@ -60,31 +73,30 @@ export default {
     width: 100%;
     text-transform: uppercase;
     display: block;
-    font-weight: 700;
-    font-size: 1.15rem;
+    font-weight: bold;
+    font-size: 1rem;
     font-family: sans-serif;
     letter-spacing: 1px;
     outline: none;
-  }
-  .route {
-    display: block;
-    text-decoration: none;
-    max-width: 600px;
-    width: 70vw;
-    max-width: 600px;
-    margin: auto;
-    line-height: 2.85rem;
-    &.current {
-      color: white;
-      background-color: dodgerblue;
+    &.route {
+      display: block;
+      text-decoration: none;
+      max-width: 600px;
+      width: 95vw;
+      max-width: 600px;
+      margin: auto;
+      line-height: 3rem;
+      &.current {
+        color: white;
+        background-color: dodgerblue;
+      }
     }
   }
-  .logo,
-  form,
-  select {
-    width: 70vw;
-    max-width: 600px;
-    margin: auto;
+  form button {
+    background-color: #e88c35;
+    color: white;
+    line-height: 2.9rem;
+    cursor: pointer;
   }
   select {
     height: 3rem;
@@ -94,9 +106,27 @@ export default {
       width: 100%;
     }
   }
-  form button {
-    background-color: #e88c35;
-    color: white;
+}
+
+@media only screen and (min-width: 600px) {
+  .container {
+    .btn {
+      &.route {
+        width: 70vw;
+      }
+    }
+    .logo,
+    form,
+    select {
+      width: 70vw;
+      max-width: 600px;
+      margin: auto;
+      outline: none;
+      font-size: 1rem;
+      &::placeholder {
+        font-size: 1rem;
+      }
+    }
   }
 }
 </style>

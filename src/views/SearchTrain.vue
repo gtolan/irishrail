@@ -8,7 +8,7 @@
 
 
 <script>
-import SearchTrainById from "../components/SeachTrainById";
+import SearchTrainById from "../components/SearchTrainById";
 
 import searchMixin from "../mixins/searchMixin";
 export default {
